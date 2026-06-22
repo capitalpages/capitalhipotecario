@@ -46,6 +46,7 @@
     const cae=caePct(creditoUF,divConSegUF,n);
 
     const toCLP=x=>x*uf;
+    set("rValor", fmtUF(valorUF), fmtCLP.format(state.valor));
     set("rDiv", fmtCLP.format(toCLP(divSinSegUF)));
     set("rDivUF", "≈ "+fmtUF(divSinSegUF)+" / mes");
     set("rTasa", state.tasa.toLocaleString("es-CL")+"%");
@@ -108,16 +109,12 @@
     if(segTipo) segTipo.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
       segTipo.querySelectorAll("button").forEach(x=>x.classList.remove("active"));b.classList.add("active");state.tipo=b.dataset.tipo;});
 
-    // valor propiedad (input + slider)
-    const valor=$("valor"), valorRange=$("valorRange"), ufEq=$("ufEq");
-    function fillRange(){const p=(state.valor-valorRange.min)/(valorRange.max-valorRange.min)*100;valorRange.style.setProperty("--pct",p.toFixed(1)+"%");}
+    // valor propiedad (solo input)
+    const valor=$("valor"), ufEq=$("ufEq");
     function ufHint(){ if(ufEq) ufEq.innerHTML=`Equivale a <b>${fmtUF(state.valor/UF.value)}</b>`; }
     if(valor){
-      valor.addEventListener("input",()=>{let v=parseNum(valor.value);valor.value=v?fmtMiles(v):"";state.valor=v;
-        if(v>=+valorRange.min&&v<=+valorRange.max){valorRange.value=v;fillRange();}ufHint();recalc();});
-      valor.addEventListener("blur",()=>{if(state.valor<20000000){state.valor=20000000;valor.value=fmtMiles(state.valor);valorRange.value=state.valor;fillRange();ufHint();recalc();}});
-      valorRange.addEventListener("input",()=>{state.valor=+valorRange.value;valor.value=fmtMiles(state.valor);fillRange();ufHint();recalc();});
-      fillRange();
+      valor.addEventListener("input",()=>{let v=parseNum(valor.value);valor.value=v?fmtMiles(v):"";state.valor=v;ufHint();recalc();});
+      valor.addEventListener("blur",()=>{if(state.valor<20000000){state.valor=20000000;valor.value=fmtMiles(state.valor);ufHint();recalc();}});
     }
 
     // financiamiento

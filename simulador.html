@@ -25,11 +25,8 @@
 
 <div class="sim reveal" id="sim" data-pane style="display:grid">
   <div class="sim-form">
-    <div class="field"><div class="field-top"><label>Tipo de propiedad</label></div>
-      <div class="seg" id="segTipo"><button class="active" data-tipo="casa">Casa</button><button data-tipo="depto">Departamento</button></div></div>
     <div class="field"><div class="field-top"><label for="valor">Valor de la propiedad</label><span class="hint">Precio total</span></div>
       <div class="money-in"><span class="cur">$</span><input type="text" id="valor" inputmode="numeric" value="120.000.000"></div>
-      <input type="range" id="valorRange" min="20000000" max="800000000" step="1000000" value="120000000">
       <div class="uf-eq" id="ufEq"></div></div>
     <div class="field"><div class="field-top"><label>¿Cuánto financiar?</label><span class="hint">% del valor</span></div>
       <div class="seg" id="segFin"><button data-fin="80">80%<small>Pie 20%</small></button><button data-fin="85">85%<small>Pie 15%</small></button><button data-fin="90" class="active">90%<small>Pie 10%</small></button></div></div>
@@ -42,6 +39,7 @@
     <div class="out-label">Tu dividendo es</div>
     <div class="out-big" id="rDiv">$0</div><div class="out-uf" id="rDivUF">≈ 0 UF / mes</div>
     <div class="out-table">
+      <div class="out-row"><span class="k">Valor de la propiedad</span><span class="v" id="rValor">–</span></div>
       <div class="out-row"><span class="k">Tasa anual referencial</span><span class="v" id="rTasa">–</span></div>
       <div class="out-row"><span class="k">Plazo</span><span class="v" id="rPlazo">–</span></div>
       <div class="out-row total"><span class="k">Monto del crédito</span><span class="v" id="rCredito">–</span></div>
