@@ -413,3 +413,61 @@ footer{background:var(--ink);color:#c2c8e0;padding:62px 0 34px;margin-top:var(--
 .capi-wa a{color:#9aa3c4;font-size:12.5px;font-weight:500}
 .capi-wa a:hover{color:var(--teal)}
 @media(max-width:520px){ .capi-fab span{display:none} .capi-fab{padding:14px;bottom:88px} }
+
+/* ============================================================
+   AÑADIDOS v3 — hero pantalla completa (Santiago) + simulador inline
+   ============================================================ */
+.hero-full{position:relative;min-height:calc(100vh - 74px);display:flex;flex-direction:column;
+  padding:clamp(34px,6vh,72px) 0 clamp(26px,4vh,48px);overflow:hidden}
+.santiago-svg{position:absolute;inset:0;width:100%;height:100%}
+.hero-shade{position:absolute;inset:0;background:
+  radial-gradient(900px 520px at 15% 24%,rgba(255,255,255,.72),rgba(255,255,255,0) 60%),
+  linear-gradient(180deg,rgba(255,255,255,.25),rgba(255,255,255,0) 30%)}
+.hero-full-inner{position:relative;z-index:1;display:flex;flex-direction:column;justify-content:space-between;flex:1;gap:34px}
+.hero-copy{max-width:640px}
+.hero-title{font-family:var(--font-head);font-weight:800;line-height:.96;letter-spacing:-.025em;
+  font-size:clamp(46px,8.2vw,94px);color:var(--ink);margin-bottom:18px}
+.hero-title .ac{color:var(--coral)}
+.hero-sub{font-size:clamp(16px,1.7vw,20px);color:var(--ink-2);max-width:34ch;margin-bottom:24px;font-weight:500}
+.hero-copy .hero-actions{gap:12px}
+
+/* simulador inline tipo "pre-aprobación" */
+.presim{position:relative}
+.presim-head{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;margin-bottom:14px;flex-wrap:wrap}
+.presim-head h2{font-size:clamp(20px,2.8vw,28px);margin-bottom:2px}
+.presim-head p{color:var(--ink-2);font-size:14px;font-weight:500}
+.presim-tabs{display:inline-flex;gap:4px;background:var(--ink);padding:5px;border-radius:999px;flex:none}
+.presim-tabs button{font-family:var(--font-head);font-weight:600;font-size:13.5px;padding:9px 18px;border-radius:999px;
+  border:0;background:transparent;color:#9aa3c4;cursor:pointer;transition:.15s}
+.presim-tabs button.active{background:#fff;color:var(--ink)}
+.presim-card{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--sh-lg);padding:14px}
+.presim-row{display:grid;grid-template-columns:1.25fr 1fr 1fr auto;gap:12px;align-items:stretch}
+.presim-field{display:flex;flex-direction:column;justify-content:center;padding:8px 10px}
+.presim-field label{font-size:12px;color:var(--muted);font-weight:600;margin-bottom:4px}
+.presim-field .pin{position:relative}
+.presim-field .pin .cur{position:absolute;left:0;top:50%;transform:translateY(-50%);color:var(--ink);font-weight:800;font-size:24px;font-family:var(--font-head)}
+.presim-field .pin .suf{position:absolute;right:2px;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:700;font-size:15px}
+.presim-field input{width:100%;border:0;border-bottom:2px solid var(--line-2);background:transparent;
+  font-family:var(--font-head);font-weight:800;font-size:26px;color:var(--ink);padding:4px 0 4px 22px;transition:.15s}
+.presim-field .pin.uf input{padding-left:0;padding-right:42px}
+.presim-field input:focus{outline:none;border-color:var(--teal)}
+.presim-out{border-radius:var(--r);padding:13px 16px;display:flex;flex-direction:column;justify-content:center;gap:3px;text-align:center}
+.presim-out.green{background:#e9f7ef;border:1px solid #cdebd9}
+.presim-out.blue{background:#e8f1fb;border:1px solid #d2e3f5}
+.presim-out .po-k{font-size:12px;color:var(--muted);font-weight:600}
+.presim-out .po-v{font-family:var(--font-head);font-weight:800;font-size:clamp(19px,2.3vw,26px);color:var(--ink);line-height:1.1}
+.presim-out .po-v small{font-weight:600;font-size:13px;color:var(--muted)}
+.presim-btn{align-self:center;white-space:nowrap;padding-inline:22px}
+.presim-foot{margin-top:11px;font-size:12.5px;color:var(--ink-2);font-weight:500;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.presim-foot .uf{font-weight:700;color:var(--teal-700)}
+.presim-badges{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.presim-badge{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-2);font-weight:600}
+.presim-badge svg{color:var(--teal)}
+
+@media(max-width:960px){
+  .hero-full{min-height:auto;padding-top:38px}
+  .presim-row{grid-template-columns:1fr 1fr}
+  .presim-field{grid-column:1/-1}
+  .presim-btn{grid-column:1/-1;align-self:stretch}
+}
+@media(max-width:560px){ .presim-row{grid-template-columns:1fr} .hero-title{font-size:clamp(42px,13vw,60px)} }
