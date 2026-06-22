@@ -1,64 +1,74 @@
 /* ============================================================
    Capital Hipotecario — bot.js
-   "Capi": asistente virtual que responde preguntas sobre
-   créditos hipotecarios (estilo Aski de Asfink). Reglas por
-   palabras clave + preguntas rápidas + paso a WhatsApp.
+   "Capi": asistente virtual sobre créditos hipotecarios.
+   Botones rápidos enrutados por id + texto libre por palabras
+   clave (con acentos normalizados) + paso a WhatsApp.
    ============================================================ */
 (function(){
   function waLink(){
     const c = window.CONFIG || {whatsapp:"56966593109",whatsappMsg:""};
     return `https://wa.me/${c.whatsapp}?text=${encodeURIComponent(c.whatsappMsg||"Hola, quiero información sobre un crédito hipotecario.")}`;
   }
+  // normaliza: minúsculas y sin acentos
+  const norm = s => String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
 
-  // Base de conocimiento: cada item tiene palabras clave y respuesta
-  const KB = [
-    { keys:["hola","buenas","buenos dias","buenas tardes","hey","ola"],
-      a:"¡Hola! 👋 Soy <b>Capi</b>, tu asistente de Capital Hipotecario. Puedo orientarte sobre dividendos, pie, tasas, UF, documentos y el proceso. ¿Qué te gustaría saber?" },
-    { keys:["pie","cuanto pie","financiamiento","financiar","80","85","90","ahorro"],
-      a:"El <b>pie</b> es lo que pagas con tus ahorros; el resto lo financia el crédito. Trabajamos con financiamiento de <b>80%, 85% o 90%</b>:<br>• 80% → pie 20%<br>• 85% → pie 15%<br>• 90% → pie 10%<br>Mientras menos pie, mayor el crédito y el dividendo. Puedes comparar los tres escenarios en el <a href='simulador.html'>simulador</a>." },
-    { keys:["dividendo","cuota","cuanto pago","mensual","pagar al mes"],
-      a:"El <b>dividendo</b> es tu cuota mensual. Depende del valor de la propiedad, cuánto financias, el plazo y la tasa. Calcúlalo al instante en el <a href='simulador.html'>simulador</a> — te muestra el dividendo con y sin seguros." },
-    { keys:["tasa","interes","fija","variable","5,3","5.3"],
-      a:"Nuestra tasa <b>referencial es 5,3% anual</b> (la real depende de tu evaluación y del banco). La <b>tasa fija</b> mantiene tu dividendo estable todo el crédito; la <b>variable</b> puede subir o bajar. La mayoría en Chile elige fija por la certeza." },
-    { keys:["uf","unidad de fomento","por que cambia","reajuste"],
-      a:"En Chile los créditos van en <b>UF</b>, no en pesos. La UF se reajusta con la inflación, así que tu dividendo en UF es fijo pero en pesos sube de a poco cada mes. El simulador usa la <b>UF del día</b> y te muestra el equivalente en pesos." },
-    { keys:["documento","papeles","requisito","necesito","liquidacion","afp","dicom"],
-      a:"Para renta dependiente normalmente piden: <b>cédula</b>, <b>3–6 liquidaciones de sueldo</b>, <b>certificado de cotizaciones AFP</b>, <b>antigüedad laboral</b>, <b>cartola del pie</b> e <b>informe de deudas</b>. Si eres independiente, se suman tus <b>F22</b> de los últimos 2 años." },
-    { keys:["cae","carga anual","costo total"],
-      a:"El <b>CAE</b> (Carga Anual Equivalente) resume el costo real del crédito incluyendo seguros y gastos, por eso suele ser algo mayor que la tasa. En el <a href='simulador.html'>simulador</a> verás el CAE referencial junto al desglose completo." },
-    { keys:["plazo","años","cuantos años","40","30","20"],
-      a:"Ofrecemos plazos de <b>15 a 40 años</b>. A mayor plazo, menor dividendo mensual, pero pagas más intereses en total. En el simulador puedes probar 15, 20, 25, 30 y 40 años." },
-    { keys:["seguro","desgravamen","incendio","sismo"],
-      a:"Todo crédito hipotecario lleva <b>seguro de desgravamen</b> (cubre la deuda en caso de fallecimiento) y <b>seguro de incendio y sismo</b> (protege la propiedad). El simulador los estima dentro del dividendo." },
-    { keys:["gastos","operacionales","notaria","tasacion","escritura","gop"],
-      a:"Los <b>gastos operacionales</b> (tasación, estudio de títulos, notaría, impuesto al mutuo e inscripción) se pagan una vez al inicio y suelen sumar entre <b>2% y 4%</b> del crédito. El simulador te muestra una estimación." },
-    { keys:["cuanto puedo pedir","capacidad","renta","sueldo","gano"],
-      a:"Como referencia, el dividendo no debería superar el <b>25% de tu renta líquida</b>. En la pestaña <b>“¿Cuánto puedo pedir?”</b> del <a href='simulador.html'>simulador</a> ingresas tu renta y te estima el crédito máximo." },
-    { keys:["refinanciar","portabilidad","cambiar de banco","bajar dividendo"],
-      a:"Sí: podemos ayudarte a <b>refinanciar</b> o hacer <b>portabilidad financiera</b> para bajar tu tasa o tu dividendo. Cuéntanos tu caso en <a href='contacto.html'>contacto</a> o por WhatsApp y lo revisamos." },
-    { keys:["primera vivienda","comprar casa","comprar departamento","primera casa"],
-      a:"Para tu <b>primera vivienda</b> financiamos hasta el 90% con plazos de hasta 40 años. Lo ideal es partir simulando y luego conversamos tu caso. ¿Quieres que te oriente un asesor?" },
-    { keys:["subsidio","ds1","ds19"],
-      a:"Apoyamos crédito complementario para <b>subsidios DS1 y DS19</b>. Lo mejor es revisarlo caso a caso: déjanos tus datos en <a href='contacto.html'>contacto</a> o escríbenos por WhatsApp." },
-    { keys:["proceso","como funciona","pasos","etapas"],
-      a:"El proceso es: <b>1)</b> simulas y conversamos · <b>2)</b> reúnes documentos · <b>3)</b> evaluación y aprobación en varios bancos · <b>4)</b> tasación y escrituras · <b>5)</b> recibes las llaves. Te acompañamos en cada paso." },
-    { keys:["costo","gratis","cobran","honorario","comision"],
-      a:"La <b>asesoría es sin costo</b>. Comparamos varios bancos para conseguirte la mejor opción, sin compromiso." },
-    { keys:["agenda","reunion","hablar","contacto","asesor","ejecutivo"],
-      a:"Con gusto. Puedes dejar tus datos en <a href='contacto.html'>contacto</a> o hablar ahora mismo con un asesor por WhatsApp 👇" },
-    { keys:["gracias","thank","genial","perfecto"],
-      a:"¡De nada! 😊 Si quieres, simula tu crédito en el <a href='simulador.html'>simulador</a> o escríbenos por WhatsApp para hablar con un asesor." }
+  // Base de conocimiento (cada item tiene id + palabras clave ya sin acentos)
+  const KB = {
+    saludo:{keys:["hola","buenas","buenos dias","buenas tardes","hey","ola","que tal"],
+      a:"¡Hola! 👋 Soy <b>Capi</b>, tu asistente de Capital Hipotecario. Puedo orientarte sobre dividendos, pie, tasas, UF, documentos y el proceso. ¿Qué te gustaría saber?"},
+    pie:{keys:["cuanto pie","pie necesito","pie inicial","de pie","el pie","financiamiento","financiar","cuanto financian","cuanto se financia"],
+      a:"El <b>pie</b> es la parte del valor que pagas con tus ahorros; el resto lo financia el crédito. Trabajamos con financiamiento de <b>80%, 85% o 90%</b>:<br>• 80% → pie 20%<br>• 85% → pie 15%<br>• 90% → pie 10%<br>Mientras menos pie, mayor el crédito y el dividendo. Considera además los gastos operacionales (2%–4% del crédito). Compara los tres escenarios en el <a href='simulador.html'>simulador</a>."},
+    dividendo:{keys:["dividendo","cuota","cuanto pago","cuanto pagaria","mensual","pago mensual","como se calcula"],
+      a:"El <b>dividendo</b> es tu cuota mensual. Depende del valor de la propiedad, cuánto financias, el plazo y la tasa, más los seguros. Calcúlalo al instante en el <a href='simulador.html'>simulador</a> — lo muestra con y sin seguros."},
+    tasa:{keys:["tasa","interes","fija","variable","mixta","5,3","5.3","53"],
+      a:"Nuestra tasa <b>referencial es 5,3% anual</b> (la real depende de tu evaluación y del banco). La <b>tasa fija</b> mantiene tu dividendo estable todo el crédito; la <b>variable</b> puede subir o bajar. La mayoría en Chile elige fija por la certeza."},
+    uf:{keys:["uf","unidad de fomento","por que cambia","reajuste","en pesos"],
+      a:"En Chile los créditos van en <b>UF</b>, no en pesos. La UF se reajusta con la inflación, así que tu dividendo en UF es fijo pero en pesos sube de a poco cada mes. El simulador usa la <b>UF del día</b> y muestra el equivalente en pesos."},
+    documentos:{keys:["documento","documentos","papeles","requisito","requisitos","liquidacion","afp","dicom","que piden","que me piden","carpeta tributaria","que necesito llevar"],
+      a:"Para renta dependiente normalmente piden: <b>cédula</b>, <b>3–6 liquidaciones de sueldo</b>, <b>certificado de cotizaciones AFP</b>, <b>antigüedad laboral</b>, <b>cartola del pie</b> e <b>informe de deudas</b>. Si eres independiente, se suman tus <b>F22</b> de los últimos 2 años."},
+    cae:{keys:["cae","carga anual","costo total del credito","costo real"],
+      a:"El <b>CAE</b> (Carga Anual Equivalente) resume el costo real del crédito incluyendo seguros y gastos, por eso suele ser algo mayor que la tasa. Es la mejor cifra para comparar ofertas entre bancos. En el <a href='simulador.html'>simulador</a> lo ves junto al desglose."},
+    plazo:{keys:["plazo","cuantos anos","anos","40 anos","30 anos","20 anos","a cuanto tiempo"],
+      a:"Ofrecemos plazos de <b>15 a 40 años</b>. A mayor plazo, menor dividendo mensual, pero pagas más intereses en total. Pruébalos en el <a href='simulador.html'>simulador</a>."},
+    seguros:{keys:["seguro","seguros","desgravamen","incendio","sismo"],
+      a:"Todo crédito lleva <b>seguro de desgravamen</b> (cubre la deuda en caso de fallecimiento) y <b>seguro de incendio y sismo</b> (protege la propiedad). El simulador los estima dentro del dividendo."},
+    gastos:{keys:["gastos","operacionales","notaria","tasacion","escritura","gop","gastos asociados"],
+      a:"Los <b>gastos operacionales</b> (tasación, estudio de títulos, notaría, impuesto al mutuo e inscripción) se pagan una vez al inicio y suman entre <b>2% y 4%</b> del crédito. El simulador te muestra una estimación."},
+    capacidad:{keys:["cuanto puedo pedir","capacidad","con mi renta","cuanto me prestan","cuanto presta","segun mi sueldo","cuanto podria pedir","gano"],
+      a:"Como referencia, el dividendo no debería superar el <b>25% de tu renta líquida</b>. En la pestaña <b>“¿Cuánto puedo pedir?”</b> del <a href='simulador.html'>simulador</a> ingresas tu renta y te estima el crédito y la propiedad máxima."},
+    refinanciar:{keys:["refinanciar","portabilidad","cambiar de banco","bajar dividendo","bajar la cuota","ya tengo credito"],
+      a:"Sí: podemos ayudarte a <b>refinanciar</b> o hacer <b>portabilidad financiera</b> para bajar tu tasa o tu dividendo. Cuéntanos tu caso en <a href='contacto.html'>contacto</a> o por WhatsApp y lo revisamos."},
+    primera:{keys:["primera vivienda","primera casa","comprar casa","comprar departamento","comprar mi primera"],
+      a:"Para tu <b>primera vivienda</b> financiamos hasta el 90% con plazos de hasta 40 años. Lo ideal es partir simulando y luego conversamos tu caso. ¿Quieres que te oriente un asesor?"},
+    subsidio:{keys:["subsidio","ds1","ds19","ds 1","ds 19"],
+      a:"Apoyamos crédito complementario para <b>subsidios DS1 y DS19</b>. Lo mejor es revisarlo caso a caso: déjanos tus datos en <a href='contacto.html'>contacto</a> o escríbenos por WhatsApp."},
+    proceso:{keys:["proceso","como funciona","pasos","etapas","como es el tramite"],
+      a:"El proceso es: <b>1)</b> simulas y conversamos · <b>2)</b> reúnes documentos · <b>3)</b> evaluación y aprobación en varios bancos · <b>4)</b> tasación y escrituras · <b>5)</b> recibes las llaves. Te acompañamos en cada paso."},
+    costo:{keys:["costo","gratis","cobran","cobran algo","honorario","honorarios","comision","tiene costo"],
+      a:"La <b>asesoría es sin costo</b>. Comparamos varios bancos para conseguirte la mejor opción, sin compromiso."},
+    agenda:{keys:["agenda","reunion","hablar","contacto","asesor","ejecutivo","quiero hablar","contactar"],
+      a:"Con gusto. Puedes dejar tus datos en <a href='contacto.html'>contacto</a> o hablar ahora mismo con un asesor por WhatsApp 👇"},
+    gracias:{keys:["gracias","thank","genial","perfecto","listo","ok gracias"],
+      a:"¡De nada! 😊 Si quieres, simula tu crédito en el <a href='simulador.html'>simulador</a> o escríbenos por WhatsApp para hablar con un asesor."}
+  };
+
+  // Botones rápidos enrutados directamente a su respuesta (sin adivinar)
+  const CHIPS = [
+    {t:"¿Cuánto pie necesito?", id:"pie"},
+    {t:"¿Cómo se calcula el dividendo?", id:"dividendo"},
+    {t:"Tasa fija o variable", id:"tasa"},
+    {t:"¿Qué es la UF?", id:"uf"},
+    {t:"Documentos necesarios", id:"documentos"},
+    {t:"¿Cuánto puedo pedir?", id:"capacidad"}
   ];
 
-  const CHIPS = ["¿Cuánto pie necesito?","¿Cómo se calcula el dividendo?","Tasa fija o variable","¿Qué es la UF?","Documentos necesarios","¿Cuánto puedo pedir?"];
-
   function findAnswer(text){
-    const t = text.toLowerCase();
+    const t = norm(text);
     let best=null, score=0;
-    for(const item of KB){
+    for(const id in KB){
       let s=0;
-      for(const k of item.keys){ if(t.includes(k)) s += k.length; }
-      if(s>score){ score=s; best=item; }
+      for(const k of KB[id].keys){ if(t.includes(k)) s += k.length; }
+      if(s>score){ score=s; best=KB[id]; }
     }
     if(best) return best.a;
     return "No estoy seguro de eso 🤔, pero un asesor puede ayudarte en detalle. Puedes <a href='contacto.html'>dejar tus datos</a> o escribirnos por WhatsApp. Mientras, prueba el <a href='simulador.html'>simulador</a> para estimar tu dividendo.";
@@ -106,12 +116,12 @@
       chipsBox.innerHTML="";
       CHIPS.forEach(c=>{
         const b=document.createElement("button");
-        b.className="capi-chip"; b.textContent=c;
-        b.onclick=()=>handle(c);
+        b.className="capi-chip"; b.textContent=c.t;
+        b.onclick=()=>{ addMsg(c.t,"user"); botSay(KB[c.id].a); };
         chipsBox.appendChild(b);
       });
     }
-    function handle(text){
+    function handleText(text){
       addMsg(text,"user");
       botSay(findAnswer(text));
     }
@@ -131,8 +141,8 @@
 
     fab.onclick=open;
     panel.querySelector("#capiX").onclick=close;
-    panel.querySelector("#capiSend").onclick=()=>{ const v=input.value.trim(); if(v){ handle(v); input.value=""; } };
-    input.addEventListener("keydown",e=>{ if(e.key==="Enter"){ const v=input.value.trim(); if(v){ handle(v); input.value=""; } } });
+    panel.querySelector("#capiSend").onclick=()=>{ const v=input.value.trim(); if(v){ handleText(v); input.value=""; } };
+    input.addEventListener("keydown",e=>{ if(e.key==="Enter"){ const v=input.value.trim(); if(v){ handleText(v); input.value=""; } } });
   }
 
   if(document.readyState!=="loading") build();
