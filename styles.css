@@ -422,15 +422,15 @@ footer{background:var(--ink);color:#c2c8e0;padding:62px 0 34px;margin-top:var(--
   background:#dbe8f1 url('santiago.jpg') center 30%/cover no-repeat}
 .santiago-svg{position:absolute;inset:0;width:100%;height:100%}
 .hero-shade{position:absolute;inset:0;background:
-  linear-gradient(96deg,#ffffff 0%,rgba(255,255,255,.97) 24%,rgba(255,255,255,.62) 40%,rgba(255,255,255,.14) 52%,rgba(255,255,255,0) 62%),
-  linear-gradient(0deg,rgba(255,255,255,.12),rgba(255,255,255,.12))}
+  radial-gradient(1100px 620px at 50% 40%,rgba(255,255,255,.66),rgba(255,255,255,.34) 72%),
+  linear-gradient(180deg,rgba(255,255,255,.42),rgba(255,255,255,.30))}
 .hero-banner-inner{position:relative;z-index:1;width:100%}
-.hero-copy{max-width:560px}
+.hero-copy{max-width:780px;margin:0 auto;text-align:center}
 .hero-title{font-family:var(--font-head);font-weight:800;line-height:1.02;letter-spacing:-.02em;
   font-size:clamp(26px,3.1vw,40px);color:var(--ink);margin-bottom:14px}
 .hero-title .ac{color:var(--coral)}
-.hero-sub{font-size:clamp(15px,1.5vw,18px);color:var(--ink-2);max-width:40ch;margin-bottom:24px;font-weight:500;line-height:1.55}
-.hero-copy .hero-actions{gap:12px}
+.hero-sub{font-size:clamp(15px,1.5vw,18px);color:var(--ink-2);max-width:52ch;margin:0 auto 26px;font-weight:500;line-height:1.55}
+.hero-copy .hero-actions{gap:12px;justify-content:center}
 .presim-section{background:var(--bg-soft);padding:clamp(40px,6vw,72px) 0}
 
 /* simulador inline tipo "pre-aprobación" */
@@ -468,7 +468,7 @@ footer{background:var(--ink);color:#c2c8e0;padding:62px 0 34px;margin-top:var(--
 
 @media(max-width:960px){
   .hero-banner{min-height:auto;background-position:center 30%}
-  .hero-shade{background:linear-gradient(95deg,#fff 0%,rgba(255,255,255,.93) 48%,rgba(255,255,255,.6) 78%,rgba(255,255,255,.25) 100%)}
+  .hero-shade{background:radial-gradient(900px 600px at 50% 42%,rgba(255,255,255,.62),rgba(255,255,255,.4) 75%),linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,.4))}
   .presim-row{grid-template-columns:1fr 1fr}
   .presim-field{grid-column:1/-1}
   .presim-btn{grid-column:1/-1;align-self:stretch}
