@@ -46,22 +46,16 @@
     const cae=caePct(creditoUF,divConSegUF,n);
 
     const toCLP=x=>x*uf;
-    set("rDiv", fmtCLP.format(toCLP(divConSegUF)));
-    set("rDivUF", "≈ "+fmtUF(divConSegUF)+" / mes");
+    set("rDiv", fmtCLP.format(toCLP(divSinSegUF)));
+    set("rDivUF", "≈ "+fmtUF(divSinSegUF)+" / mes");
     set("rTasa", state.tasa.toLocaleString("es-CL")+"%");
-    set("rCae", cae.toLocaleString("es-CL",{maximumFractionDigits:2})+"%");
-    set("rDivSin", fmtUF(divSinSegUF), fmtCLP.format(toCLP(divSinSegUF)));
-    set("rSeg", fmtUF(segUF), fmtCLP.format(toCLP(segUF)));
-    set("rGop", fmtUF(gopUF), fmtCLP.format(toCLP(gopUF)));
-    set("rCredito", fmtUF(creditoUF), fmtCLP.format(toCLP(creditoUF)));
-    set("rPie", fmtUF(pieUF), fmtCLP.format(toCLP(pieUF)));
     set("rPlazo", state.plazo+" años");
-    set("rCosto", fmtUF(costoTotalUF), fmtCLP.format(toCLP(costoTotalUF)));
+    set("rCredito", fmtUF(creditoUF), fmtCLP.format(toCLP(creditoUF)));
 
     const ufTxt = UF.date ? UF.date.toLocaleDateString("es-CL") : "valor referencial";
     const st=$("ufStamp"); if(st) st.textContent=`Valor UF al ${ufTxt}: ${fmtCLP.format(uf)}`;
 
-    window.lastSim = `Simulación dividendo: Propiedad ${fmtCLP.format(state.valor)} (${fmtUF(valorUF)}) · Financia ${state.fin}% · Plazo ${state.plazo} años · Tasa ${state.tasa}% · Dividendo aprox. ${fmtCLP.format(toCLP(divConSegUF))}`;
+    window.lastSim = `Simulación dividendo: Propiedad ${fmtCLP.format(state.valor)} (${fmtUF(valorUF)}) · Financia ${state.fin}% · Plazo ${state.plazo} años · Tasa ${state.tasa}% · Dividendo aprox. ${fmtCLP.format(toCLP(divSinSegUF))}`;
   }
 
   // ---- modo 2: capacidad ----
