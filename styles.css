@@ -32,7 +32,7 @@
   --font-head:'Poppins',system-ui,sans-serif;
   --font-body:'Inter',system-ui,sans-serif;
 
-  --maxw:1240px;
+  --maxw:1320px;
   --r-sm:10px; --r:16px; --r-lg:22px; --r-xl:30px;
   --sh-sm:0 2px 8px rgba(25,28,51,.06);
   --sh:0 10px 30px -12px rgba(25,28,51,.18);
@@ -482,3 +482,12 @@ footer{background:var(--ink);color:#c2c8e0;padding:62px 0 34px;margin-top:var(--
 
 /* chips de Capi dentro del área con scroll */
 .capi-chiprow{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 2px}
+
+/* ============================================================
+   v4 — equilibrio en pantallas muy grandes (27"+)
+   El sitio se centra con un ancho máximo; el hero y las
+   secciones a sangre completa quedan dentro de ese marco.
+   ============================================================ */
+html{background:var(--bg-soft)}
+body{max-width:1920px;margin-inline:auto}
+header{margin-inline:auto}
