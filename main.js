@@ -9,7 +9,7 @@ window.CONFIG = {
   phoneDisplay: "+56 9 6659 3109",           // ← teléfono visible
   // URL del Google Apps Script que recibe el formulario y envía el correo
   // (mismo enfoque que Asfink). Si queda vacío, el formulario abre el correo.
-  formEndpoint: "",
+  formEndpoint: "https://script.google.com/a/macros/capitalhipotecario.cl/s/AKfycbyQx59GZB-L_cU3p3Tdl5HVAtYb-_mVTqUPx6-m7mHPSjr8G7a6eZOkD4yLIItsNu7HWw/exec",
   // Pega tu enlace de Calendly para incrustar la agenda en agenda.html
   calendly: "",
   // Tasa referencial anual y valor UF de respaldo (se actualiza en vivo si hay conexión)
@@ -92,7 +92,7 @@ function initForm(form){
     btn.disabled=true; const orig=btn.textContent; btn.textContent="Enviando...";
     try{
       if(CONFIG.formEndpoint){
-        await fetch(CONFIG.formEndpoint,{method:"POST",body:JSON.stringify(data),headers:{"Content-Type":"text/plain;charset=utf-8"}});
+        await fetch(CONFIG.formEndpoint,{method:"POST",mode:"no-cors",body:JSON.stringify(data),headers:{"Content-Type":"text/plain;charset=utf-8"}});
         msg.textContent="¡Listo! Recibimos tu consulta. Te contactaremos a la brevedad.";
         msg.classList.add("ok"); form.reset();
       }else{
